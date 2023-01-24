@@ -6,10 +6,15 @@ import java.util.Map;
 public class XUrlImpl implements XUrl{
 
     // key = short url && value = long url
-    HashMap<String,String> shortFind = new HashMap<String,String>(); 
-    HashMap<String,Integer> countHit = new HashMap<>(); 
-    private String s = "http://short.url/";
+    private Map<String,String> shortFind; 
+    private Map<String,Integer> countHit; 
+    private static final String s = "http://short.url/";
     private String AplhaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz" + "0123456789";
+
+    public XUrlImpl(){
+        shortFind = new HashMap<String,String>();
+        countHit = new HashMap<String,Integer>();
+    }
 
     void addCountMap(String longUrl) {
         if (countHit.get(longUrl) == null) {
@@ -23,20 +28,19 @@ public class XUrlImpl implements XUrl{
     @Override
     public String registerNewUrl(String longUrl) {
 
-        for (Map.Entry<String,String> entry : shortFind.entrySet())
-        {
-            if (longUrl.equals(entry.getValue()))
-            {
+        for(Map.Entry<String,String> entry : shortFind.entrySet()) {
+            if (longUrl.equals(entry.getValue())) {
                 addCountMap(longUrl);
                 return entry.getKey();
             }
         }
-
+    
         StringBuilder sb = new StringBuilder(s);
         for (int i=0 ; i<9 ;i++) {
                 int index = (int) (AplhaNumeric.length() * Math.random());
                 sb.append(AplhaNumeric.charAt(index));
         }
+
         String shrt = sb.toString();
         shortFind.put(shrt, longUrl);
         addCountMap(longUrl);
@@ -53,10 +57,8 @@ public class XUrlImpl implements XUrl{
     }
 
     public String getUrl(String shortUrl) {
-        for (Map.Entry<String,String> entry : shortFind.entrySet()) {
-            if (shortUrl.equals(entry.getKey())) {
-                return entry.getValue();
-            }
+        if (shortFind.containsKey(shortUrl)) {
+            return shortFind.get(shortUrl);
         }
         return null;
     }
